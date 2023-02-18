@@ -6,8 +6,8 @@ declare module 'koishi' {
   }
 
   interface Session {
-    layout?: string
-    slots?: Dict<Fragment | Slot>
+    layout: string
+    slots: Dict<Fragment | Slot>
   }
 }
 
@@ -23,28 +23,25 @@ class Template extends Service {
     super(ctx, 'template')
 
     ctx.any().on('message', (session) => {
+      session.layout = 'default'
       session.slots = {}
     })
 
     ctx.any().before('send', async (session, options) => {
-      if (!options.session?.layout) return
-      const { layout, slots } = options.session
+      const layout = this.layouts[options.session?.layout]
+      if (!layout) return
       const oldElements = session.elements
-      session.elements = h.normalize(await this.render(layout, {
-        ...slots,
-        default: oldElements,
+      session.elements = h.normalize(await layout({
+        ...valueMap(options.session.slots, (slot) => {
+          return typeof slot === 'function' ? slot : () => slot
+        }),
+        default: () => oldElements,
       }))
     })
   }
 
   define(name: string, render: (slots: Dict<Slot>) => Awaitable<Fragment>) {
     this.layouts[name] = render
-  }
-
-  render(name: string, slots: Dict<Fragment | Slot>) {
-    return this.layouts[name](valueMap(slots, (slot) => {
-      return typeof slot === 'function' ? slot : () => slot
-    }))
   }
 }
 

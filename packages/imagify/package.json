@@ -1,6 +1,6 @@
 {
-  "name": "koishi-plugin-template",
-  "description": "Template renderer service for Koishi",
+  "name": "koishi-plugin-imagify",
+  "description": "Transform your long output into images",
   "version": "0.1.0",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -13,19 +13,20 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/koishijs/koishi-plugin-template.git",
-    "directory": "packages/core"
+    "directory": "packages/imagify"
   },
   "bugs": {
     "url": "https://github.com/koishijs/koishi-plugin-template/issues"
   },
-  "homepage": "https://template.koishi.chat",
+  "homepage": "https://template.koishi.chat/plugins/imagify.html",
   "koishi": {
     "description": {
-      "en": "Template Renderer Service",
-      "zh": "模板渲染服务"
+      "en": "Transform your long output into images",
+      "zh": "将过长的文本以图片形式发出"
     },
     "service": {
-      "implements": [
+      "required": [
+        "puppeteer",
         "template"
       ]
     }
@@ -35,17 +36,21 @@
     "chatbot",
     "koishi",
     "plugin",
-    "template",
-    "service",
-    "render"
+    "imagify",
+    "transform",
+    "template"
   ],
   "peerDependencies": {
-    "koishi": "^4.11.0"
+    "koishi": "^4.8.4",
+    "koishi-plugin-puppeteer": "^3.4.10",
+    "koishi-plugin-template": "^0.1.0"
   },
   "devDependencies": {
     "@types/node": "^18.11.18",
     "atsc": "^1.2.2",
     "koishi": "^4.11.4",
+    "koishi-plugin-puppeteer": "^3.4.10",
+    "koishi-plugin-template": "^0.1.0",
     "typescript": "^4.9.4"
   }
 }
