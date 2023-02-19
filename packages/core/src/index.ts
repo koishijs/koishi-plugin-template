@@ -12,7 +12,16 @@ declare module 'koishi' {
 }
 
 export type Slot = () => Awaitable<Fragment>
-export type Layout = (slots: Dict<Slot>) => Awaitable<Fragment>
+
+export interface Layout extends Layout.Options {
+  render: Layout.Render
+}
+
+export namespace Layout {
+  export type Render = (slots: Dict<Slot>) => Awaitable<Fragment>
+
+  export interface Options {}
+}
 
 class Template extends Service {
   static filter = false
@@ -31,7 +40,7 @@ class Template extends Service {
       const layout = this.layouts[options.session?.layout]
       if (!layout) return
       const oldElements = session.elements
-      session.elements = h.normalize(await layout({
+      session.elements = h.normalize(await layout.render({
         ...valueMap(options.session.slots, (slot) => {
           return typeof slot === 'function' ? slot : () => slot
         }),
@@ -40,8 +49,8 @@ class Template extends Service {
     })
   }
 
-  define(name: string, render: (slots: Dict<Slot>) => Awaitable<Fragment>) {
-    this.layouts[name] = render
+  define(name: string, render: Layout.Render, options?: Layout.Options) {
+    this.layouts[name] = { ...options, render }
   }
 }
 
